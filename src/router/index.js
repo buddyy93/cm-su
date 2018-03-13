@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Pengaturan from '@/components/Pengaturan'
+import TambahProduk from '@/components/TambahProduk'
 import AuthGuard from './auth-guard'
 Vue.use(Router)
 
@@ -24,6 +25,12 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/tambah-produk',
+      name: 'TambahProduk',
+      component: TambahProduk,
+      beforeEnter: AuthGuard
     }
   ]
 })

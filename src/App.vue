@@ -7,7 +7,7 @@
             <h1>Markethub</h1>
           </v-list-tile-title>
         </v-list-tile>
-        <v-list-tile @click="">
+        <v-list-tile to="/">
           <v-list-tile-action>
             <v-icon>home</v-icon>
           </v-list-tile-action>

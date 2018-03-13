@@ -17,7 +17,7 @@
                   </v-card-title>
                 </v-card>
               </v-flex>
-              <v-btn href="./add.html" color="pink" dark fixed fab style="right:30px;bottom:50px">
+              <v-btn to="/tambah-produk" color="pink" dark fixed fab style="right:30px;bottom:50px">
                 <v-icon>add</v-icon>
               </v-btn>
             </v-layout>
