@@ -6,7 +6,7 @@
           <v-container fluid grid-list-lg>
             <v-layout row wrap>
               <v-flex class="m-2" xs6 md3 v-for="item in produk" :key="item.id">
-                <v-card href="./detail.html">
+                <v-card :to="'/detail-produk/' + item.id_produk">
                   <v-card-media src="https://s2.bukalapak.com/img/2441134031/large/Mifi_Modem_Wifi_4G_XL_Go_Movimax_MV003_Free_60Gb_60Hari_BEST.jpg"
                     height="200px">
                   </v-card-media>

@@ -10,14 +10,12 @@
               <v-text-field v-model="nama_produk" name="nama_produk" label="Nama Produk" requried></v-text-field>
               <v-text-field v-model="sku" name="sku" label="SKU" requried></v-text-field>
               <v-checkbox v-model="asuransi" label="Asuransi"></v-checkbox>
-              <input style="display:none;" type="checkbox" name="asuransi" :checked="asuransi">
               <v-text-field v-model="minimum_order" name="minimum_order" label="Minimum Order" requried></v-text-field>
               <v-text-field v-model="harga" name="harga" label="Harga" requried></v-text-field>
               <v-text-field v-model="berat" name="berat" label="Berat (gram)" requried></v-text-field>
               <v-text-field v-model="stok" name="stok" label="Stok" requried></v-text-field>
               <v-select :items="kategories1" v-model="ctgi" label="Kategori 1" single-line bottom></v-select>
               <v-text-field v-model="deskripsi" name="deskripsi" label="Deskripsi" textarea requried></v-text-field>
-              <input style="display:none;" type="text" name="ctgi" :value="ctgi.text">
               <v-btn block color="primary" @click="tambah">Tambah</v-btn>
           </v-card-text>
         </v-card>
@@ -39,17 +37,19 @@ export default {
       stok: '',
       deskripsi: '',
       ctgi: '',
-      kategories1: [{
-        text: 'State 1'
-      },
-      {
-        text: 'State 2'
-      }]
+      kategories1: [
+        'State 1', 'State 2'
+      ]
     }
   },
   methods: {
     tambah () {
-      alert(this.ctgi.text)
+      alert(this.ctgi)
+      if (this.asuransi === true) {
+        this.asuransi = 0
+      } else {
+        this.asuransi = 1
+      }
       const produk = {
         nama_produk: this.nama_produk,
         sku: this.sku,
@@ -59,7 +59,7 @@ export default {
         berat: this.berat,
         stok: this.stok,
         deskripsi: this.deskripsi,
-        ctgi: this.ctgi.text
+        ctgi: this.ctgi
       }
       this.$store.dispatch('actTambahProduk', produk)
     }

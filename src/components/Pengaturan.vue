@@ -9,8 +9,8 @@
             </div>
             <v-spacer></v-spacer>
           <v-card-actions>
-            <v-btn v-if="!user" @click="blDialog = true">Login</v-btn>
-            <v-btn v-if="user">Pending</v-btn>
+            <v-btn v-if="user.statusBl == undefined && user.statusBl == null" @click="blDialog = true">Login</v-btn>
+            <v-btn v-else>Pending</v-btn>
           </v-card-actions>
           </v-card-title>
         </v-card>
@@ -36,7 +36,8 @@
             </div>
             <v-spacer></v-spacer>
           <v-card-actions>
-            <v-btn @click="tpDialog = true">Login</v-btn>
+            <v-btn v-if="user.statusTp == undefined && user.statusTp == null" @click="tpDialog = true">Login</v-btn>
+            <v-btn v-else>Pending</v-btn>
           </v-card-actions>
           </v-card-title>
         </v-card>
@@ -62,13 +63,14 @@
             </div>
             <v-spacer></v-spacer>
           <v-card-actions>
-            <v-btn @click="spDialog = true">Login</v-btn>
+            <v-btn v-if="user.statusSp == undefined && user.statusSp == null" @click="spDialog = true">Login</v-btn>
+            <v-btn v-else>Pending</v-btn>
           </v-card-actions>
           </v-card-title>
         </v-card>
         <v-dialog v-model="spDialog" persistent max-width="500px">
           <v-card>
-            <v-card-title>Login Bukalapak</v-card-title>
+            <v-card-title>Login Shopee</v-card-title>
             <v-card-text>
               <v-text-field label="email" v-model="emailSp"></v-text-field>
               <v-text-field label="password" v-model="passSp"></v-text-field>
@@ -116,6 +118,7 @@ export default {
         email: this.emailTp,
         pass: this.passTp
       }
+      this.tpDialog = false
       this.$store.dispatch('actLoginTp', userTp)
     },
     loginSp () {
@@ -123,12 +126,13 @@ export default {
         email: this.emailSp,
         pass: this.passSp
       }
+      this.spDialog = false
       this.$store.dispatch('actLoginSp', userSp)
     }
   },
   computed: {
     user () {
-      return this.$store.getters.user.statusBl !== undefined && this.$store.getters.user.statusBl !== null
+      return this.$store.getters.user.statusMp
     }
   }
 }

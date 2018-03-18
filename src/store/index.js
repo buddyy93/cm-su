@@ -23,22 +23,48 @@ export const store = new Vuex.Store({
       state.produk = payload
     },
     mutLoginBl (state, payload) {
-      state.user.statusBl = payload.statusBl
+      state.user.statusMp.statusBl = payload.statusBl
+    },
+    mutLoginTp (state, payload) {
+      state.user.statusMp.statusTp = payload.statusTp
+    },
+    mutLoginSp (state, payload) {
+      state.user.statusMp.statusSp = payload.statusSp
     },
     mutTambahProduk (state, payload) {
       state.produk.push(payload)
+    },
+    mutHapusProduk (state, payload) {
+      var array = state.produk
+      var index = array.map((item) => { return item.id_produk }).indexOf(payload)
+      state.produk.splice(index, 1)
+      Router.push('/')
     }
   },
   actions: {
     autoLogin ({commit}, payload) {
-      commit('mutUser', payload)
-      Axios.get('http://fc39e406.ngrok.io/markethub-cmsu/product/list', {
+      Axios.get('http://2fd26c69.ngrok.io/markethub-cmsu/main/login', {
         headers: {
           'Authorization': 'Basic ' + payload.token
         }
       })
         .then(response => {
-          commit('mutProduk', response.data)
+          // JSON responses are automatically parsed.
+          console.log('[Login].. ' + response.data)
+          var user = response.data
+          localStorage.setItem('user', JSON.stringify(response.data))
+          commit('mutUser', user)
+          Axios.get('http://2fd26c69.ngrok.io/markethub-cmsu/product/list', {
+            headers: {
+              'Authorization': 'Basic ' + user.token
+            }
+          })
+            .then(response => {
+              commit('mutProduk', response.data)
+            })
+            .catch(e => {
+              console.log(e)
+            })
         })
         .catch(e => {
           console.log(e)
@@ -53,9 +79,10 @@ export const store = new Vuex.Store({
     actLogin ({commit}, payload) {
       const user = {
         email: payload.email,
-        password: payload.email
+        password: payload.password
       }
-      Axios.get(`http://fc39e406.ngrok.io/markethub-cmsu/main/login`, {
+      alert(window.btoa(user.email + ':' + user.password))
+      Axios.get('http://2fd26c69.ngrok.io/markethub-cmsu/main/login', {
         headers: {
           'Authorization': 'Basic ' + window.btoa(user.email + ':' + user.password)
         }
@@ -66,9 +93,9 @@ export const store = new Vuex.Store({
           var user = response.data
           localStorage.setItem('user', JSON.stringify(response.data))
           commit('mutUser', user)
-          Axios.get('http://fc39e406.ngrok.io/markethub-cmsu/product/list', {
+          Axios.get('http://2fd26c69.ngrok.io/markethub-cmsu/product/list', {
             headers: {
-              'Authorization': 'Basic ' + payload.token
+              'Authorization': 'Basic ' + user.token
             }
           })
             .then(response => {
@@ -90,7 +117,7 @@ export const store = new Vuex.Store({
       alert(payload.email + ' ' + payload.pass + ' ' + s)
       Axios({
         method: 'post',
-        url: 'http://fc39e406.ngrok.io/markethub-cmsu/login/bukalapak',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/login/bukalapak',
         data: form,
         headers: {
           'Authorization': 'Basic ' + s
@@ -110,14 +137,16 @@ export const store = new Vuex.Store({
       alert(payload.email + ' ' + payload.pass + ' ' + s)
       Axios({
         method: 'post',
-        url: 'http://fc39e406.ngrok.io/markethub-cmsu/login/tokopedia',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/login/tokopedia',
         data: form,
         headers: {
           'Authorization': 'Basic ' + s
         }
       })
         .then((res) => {
+          commit('mutLoginTp', res.data)
           console.log(res.data)
+          Router.push('/pengaturan')
         })
     },
     actLoginSp ({commit, getters}, payload) {
@@ -128,14 +157,16 @@ export const store = new Vuex.Store({
       alert(payload.email + ' ' + payload.pass + ' ' + s)
       Axios({
         method: 'post',
-        url: 'http://fc39e406.ngrok.io/markethub-cmsu/login/shopee',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/login/shopee',
         data: form,
         headers: {
           'Authorization': 'Basic ' + s
         }
       })
         .then((res) => {
+          commit('mutLoginSp', res.data)
           console.log(res.data)
+          Router.push('/pengaturan')
         })
     },
     actTambahProduk ({commit, getters}, payload) {
@@ -154,7 +185,7 @@ export const store = new Vuex.Store({
       var s = getters.user.token
       Axios({
         method: 'post',
-        url: 'http://fc39e406.ngrok.io/markethub-cmsu/product/tambah',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/product/tambah',
         data: form,
         headers: {
           'Authorization': 'Basic ' + s
@@ -165,6 +196,45 @@ export const store = new Vuex.Store({
           console.log('[act]..' + res.data)
           Router.push('/')
         })
+    },
+    actUpdateProduk ({commit, getters}, payload) {
+      var form = new FormData()
+      form.append('nama_produk', payload.nama_produk)
+      form.append('sku', payload.sku)
+      form.append('asuransi', payload.asuransi)
+      form.append('minimum_order', payload.minimum_order)
+      form.append('harga', payload.harga)
+      form.append('berat', payload.berat)
+      form.append('stok', payload.stok)
+      form.append('deskripsi', payload.deskripsi)
+      form.append('ctgi', payload.ctgi)
+      var s = getters.user.token
+      Axios({
+        method: 'post',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/product/edit/' + payload.id_produk,
+        data: form,
+        headers: {
+          'Authorization': 'Basic ' + s
+        }
+      })
+        .then((res) => {
+          alert('update sukses')
+          Router.push('/')
+        })
+    },
+    actHapusProduk ({commit, getters}, payload) {
+      var s = getters.user.token
+      alert(payload)
+      Axios({
+        method: 'post',
+        url: 'http://2fd26c69.ngrok.io/markethub-cmsu/product/delete/' + payload,
+        headers: {
+          'Authorization': 'Basic ' + s
+        }
+      })
+        .then((res) => {
+          commit('mutHapusProduk', payload)
+        })
     }
   },
   getters: {
@@ -173,6 +243,13 @@ export const store = new Vuex.Store({
     },
     getPorduk (state) {
       return state.produk
+    },
+    getSingleProduk (state) {
+      return (produkId) => {
+        return state.produk.find((produk) => {
+          return produk.id_produk === produkId
+        })
+      }
     }
   }
 })
